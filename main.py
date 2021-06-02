@@ -1,5 +1,3 @@
-#New comment
-#New commit to test "Pull requests"
 from website import create_app
 from flask_mysqldb import MySQL
 
