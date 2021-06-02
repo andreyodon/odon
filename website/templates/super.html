@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+    <title>{% block title %}Home{% endblock %}</title>
+</head>
+<header>
+    <input type="checkbox" id="nav-toggle" class="nav-toggle">
+    <nav>
+        <div class="big-circle">
+            <img class="big-logo" src="{{ url_for('static', filename= 'img/logo.png') }}">
+        </div>
+        <ul>
+            <li><a href="/">Home</a></li>
+            {% if session['first_name'] %}
+            <li><a href="/sign_out">Sign-Out</a></li>
+            {% else %}
+            <li><a href="/sign-up">Sign-Up</a></li>
+            <li><a href="/sign_in">Sign-In</a></li>
+            {% endif %}
+            <li><a href="/post">Posts</a></li>
+        </ul>
+    </nav>
+    <label for="nav-toggle" class="nav-toggle-label">
+        <span></span>
+    </label>
+</header>
+<body>
+<div class="container_small">
+    <div class="small-circle">
+        <img class="logo" src="{{ url_for('static', filename= 'img/logo.png') }}">
+    </div>
+</div>
+{% block content %}
+{% endblock %}
+</body>
+</html>

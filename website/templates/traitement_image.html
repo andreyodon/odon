@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<html>
+  <head>
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='image.css') }}">
+  </head>
+  <body>
+  <nav>
+    <h1>Image uploadée.</h1>
+
+  <img src= "{{url_for('static', filename=nomimageOr)}} " alt="Image de base" width="75%">
+    <br>
+    <br>
+  </nav>
+  <aside>
+    <h1>Image modifiée.</h1>
+
+    <img src= "{{url_for('static', filename=nomimagemodif)}} " alt="Image modifiée" width="75%">
+  </aside>
+  <footer>
+    <p>Êtes vous sûr de vouloir mettre cette image ?</p>
+    <button onclick="goBack()">Non</button>
+    <script>
+    function goBack() {
+      window.history.back();
+    }
+    </script>
+  </footer>
+  </body>
+
+</html>
+{% endblock %}

@@ -1,0 +1,371 @@
+:root {
+    --background: rgba(255, 255, 255, .56)
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body, p {
+    margin: 0;
+    background: #A8ADA8FF;
+    font: 600 14px/28px "Open Sans", Arial, Tahoma, sans-serif;
+}
+
+header {
+    background: var(--background);
+    text-align: center;
+    position: fixed;
+    z-index: 1;
+    height: 90px;
+    width: 100%;
+    padding: 15px 0;
+}
+
+.big-circle {
+    display: none;
+}
+
+.container_small {
+    width: 100%;
+    height: 210px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+}
+
+.small-circle {
+    z-index: 2;
+    position: relative;
+    top: -20px;
+    left: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 195px;
+    height: 195px;
+    background-color: rgba(255, 255, 255, 0.27);
+    border-radius: 50%;
+}
+
+.logo {
+    width: 100px;
+    height: 155px;
+}
+
+.nav-toggle {
+    display: none;
+}
+
+.nav-toggle-label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin-left: 1em;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.nav-toggle-label span,
+.nav-toggle-label span::before,
+.nav-toggle-label span::after {
+    display: block;
+    background: white;
+    height: 2px;
+    width: 2em;
+    border-radius: 2px;
+    position: relative;
+}
+
+.nav-toggle-label span::before,
+.nav-toggle-label span::after {
+    content: '';
+    position: absolute;
+}
+
+.nav-toggle-label span::before {
+    bottom: 7px;
+}
+
+.nav-toggle-label span::after {
+    top: 7px;
+}
+
+nav {
+    position: absolute;
+    text-align: left;
+    top: 100%;
+    left: 0;
+    background: var(--background);
+    width: 100%;
+    transform: scale(1, 0);
+    transform-origin: top;
+    transition: transform 400ms ease-in-out;
+}
+
+nav ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+nav li {
+    margin-bottom: 1em;
+    margin-left: 1em;
+}
+
+nav a {
+    color: #333333;
+    text-decoration: none;
+    text-transform: uppercase;
+    opacity: 0;
+    transition: opacity 150ms ease-in-out;
+}
+
+.nav-toggle:checked ~ nav {
+    transform: scale(1, 1);
+}
+
+.nav-toggle:checked ~ nav a {
+    opacity: 1;
+    transition: opacity 250ms ease-in-out 250ms;
+}
+
+.body {
+    padding: 10px;
+    height: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.container {
+    max-width: 100%;
+    width: 100%;
+    padding: 30px 30px;
+}
+
+.container .title {
+    font-size: 22px;
+    font-weight: 500;
+    position: relative;
+}
+
+.container .title::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -5px;
+    height: 3px;
+    width: 30px;
+    background: #3864af;
+}
+
+.container form .user-details {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin: 20px 0 12px 0;
+}
+
+form .user-details .input-box {
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.user-details .input-box .details {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+.user-details .input-box input {
+    height: 40px;
+    width: 100%;
+    outline: none;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    padding-left: 15px;
+    font-size: 14px;
+    border-bottom-width: 2px;
+}
+
+select {
+    height: 40px;
+    width: 100%;
+    outline: none;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    padding-left: 15px;
+    font-size: 14px;
+    border-bottom-width: 2px;
+}
+
+select:focus,
+select:valid,
+select:required,
+select:optional{
+    border-color: #3864af;
+}
+
+.user-details .input-box input:focus,
+.user-details .input-box input:valid,
+.user-details .input-box input:required,
+.user-details .input-box input:optional{
+    border-color: #3864af;
+}
+
+form .button {
+    height: 45px;
+    margin: 45px 0;
+}
+
+form .button input {
+    height: 100%;
+    width: 100%;
+    outline: none;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    background: #3864af;
+}
+
+form .button input:hover {
+    background: #4c88ee;
+}
+
+.error {
+    height: 30px;
+    width: 70%;
+    display: flex;
+    margin-right: 45px;
+    justify-content: flex-start;
+    border: 2px solid red;
+    border-radius: 5px;
+    color: red;
+}
+
+p {
+    padding-left: 10px;
+}
+
+@media screen and (min-width: 800px) {
+    body {
+        font: 600 16px/28px "Open Sans", Arial, Tahoma, sans-serif;
+    }
+
+    .nav-toggle-label {
+        display: none;
+    }
+
+    header {
+        display: grid;
+        height: 90px;
+        grid-template-columns: .25fr .25fr .5fr auto minmax(600px, 3fr) 1fr;
+    }
+
+    .big-circle {
+        grid-column: 2 / 3;
+        position: absolute;
+        top: -50px;
+        left: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 390px;
+        height: 390px;
+        background-color: rgba(255, 255, 255, 0.27);
+        border-radius: 50%;
+    }
+
+    .small-circle {
+        display: none;
+    }
+
+    nav {
+        all: unset;
+        grid-column: 5 / 6;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+    }
+
+    nav ul {
+        display: flex;
+    }
+
+    nav li {
+        margin-left: 5em;
+        margin-bottom: 0;
+    }
+
+    nav a {
+        opacity: 1;
+        position: relative;
+    }
+
+    nav a::before {
+        content: '';
+        display: block;
+        height: 3px;
+        background: #790000;
+        position: absolute;
+        bottom: -3px;
+        left: 0;
+        right: 0;
+        transform: scale(0, 1);
+        transition: transform ease-in-out 300ms;
+    }
+
+    nav a:hover::before {
+        transform: scale(1.5, 1);
+    }
+
+    .container {
+        max-width: 700px;
+        padding: 25px 30px;
+    }
+
+    .container .title {
+        font-size: 25px;
+    }
+
+    form .user-details .input-box {
+        margin-bottom: 15px;
+        width: calc(100% / 2 - 20px);
+    }
+
+    .user-details .input-box input {
+        font-size: 16px;
+        height: 45px;
+    }
+
+    .error {
+        width: 30%;
+        margin: 0px;
+    }
+
+    p {
+        width: 100%;
+        text-align: center;
+        padding: 0px;
+    }
+}
+
+@media (max-width: 1575px) and (min-width: 800px) {
+    .big-circle {
+        width: 260px;
+        height: 260px;
+        top: -20px;
+    }
+
+    .big-logo {
+        width: 134px;
+        height: 207px;
+    }
+}

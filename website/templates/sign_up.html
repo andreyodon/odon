@@ -1,0 +1,72 @@
+{% extends "super.html" %}
+
+{% block title %}
+Sign Up
+{% endblock %}
+
+{% block content %}
+<div class="body">
+    <div class="container">
+        <div class="title">Sign-Up</div>
+        <form action="#" method="POST">
+            <div class="user-details">
+                <div class="input-box">
+                    <span class="details">First Name</span>
+                    <input type="text" name="first_name" placeholder="Your name" required>
+                </div>
+                <div class="input-box">
+                    <span class="details">Last Name</span>
+                    <input type="text" name="last_name" placeholder="Last name" required>
+                </div>
+                <div class="input-box">
+                    <span class="details">Gender</span>
+                    <select name="gender" required>
+                        {% for row in gender %}
+                            <option value="{{row[0]}}">{{row[1]}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="input-box">
+                    <span class="details">E-mail</span>
+                    <input type="email" name="email" placeholder="Your e-mail" required>
+                </div>
+                <div class="input-box">
+                    <span class="details">Password</span>
+                    <input type="password" name="password" placeholder="Your password" required>
+                </div>
+                <div class="input-box">
+                    <span class="details">Specialization</span>
+                    <select name="specialization">
+                        {% for row in specialization %}
+                        <option value="{{row[0]}}">{{row[1]}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="input-box">
+                    <span class="details">Organization type</span>
+                    <select name="organization_type">
+                        {% for row in organization_type %}
+                            <option value="{{row[0]}}">{{row[1]}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="input-box">
+                    <span class="details">Organization</span>
+                    <input type="text" name="organization" placeholder="Name of your organization">
+                </div>
+                <div class="input-box">
+                    <span class="details">Practice Management System</span>
+                    <select name="pm_system">
+                        {% for row in pm_system %}
+                        <option value="{{row[0]}}">{{row[1]}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="button">
+                <input type="submit" Value="Sign-Up">
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
