@@ -22,23 +22,24 @@ mysql = MySQL(app)
 
 def get_post(post_id):
     cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    post = cur.execute('SELECT * FROM posts WHERE id = ?',
-                        (post_id,)).fetchone()
+    cur.execute("SELECT title content FROM posts WHERE id = %s", (post_id,))
+    new_post = cur.fetchone()
+    print(new_post)
     cur.close()
     if post is None:
         abort(404)
     return post
 
 
-# def get_customer_id(customer_id):
-#     email = session['email']
-#     cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-#     id = cur.execute('SELECT id FROM customer WHERE email = ?',
-#                         (email,)).fetchone()
-#     cur.close()
-#     if id is None:
-#         abort(404)
-#     return id
+def get_customer_id(email):
+    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cur.execute("SELECT * FROM Customer WHERE email=%s", (email,))
+    user = cur.fetchone()
+    customer_id = user['id']
+    cur.close()
+    if customer_id is None:
+        abort(404)
+    return customer_id
 
 
 def process_img(img):
@@ -63,6 +64,7 @@ def sign_in():
         else:
             if bcrypt.hashpw(password, user['password'].encode('utf-8')) == user['password'].encode('utf-8'):
                 session['first_name'] = user['first_name']
+                session['email'] = user['email']
                 return render_template("home.html")
             else:
                 return render_template("sign_in.html", error="Incorrect password !")
@@ -121,10 +123,12 @@ def sign_up():
 
 @auth.route('/post')
 def index():
+    customer_id = get_customer_id(session['email'])
     cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    posts = cur.execute('SELECT * FROM posts')
+    cur.execute('SELECT id, title, content FROM posts WHERE Customer_id = %s', (customer_id,))
+    posts = cur.fetchall()
     cur.close()
-    return render_template('index.html', posts=posts)
+    return render_template('FlaskBlog.html', posts=posts)
 
 
 @auth.route('/<int:post_id>')
@@ -190,11 +194,10 @@ def create():
             flash('Title is required!')
         else:
             cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-            cur.execute('INSERT INTO posts ( title, content) VALUES ( ?, ?)',
-                         (title, content,))
-            cur.commit()
+            cur.execute('INSERT INTO posts ( title, content, customer_id) VALUES ( %s, %s, %s)',
+                         (title, content, get_customer_id(session['email'],)))
             cur.close()
-            return redirect(url_for('index'))
+            return redirect(url_for('auth.index'))
 
     return render_template('create.html')
 
@@ -202,7 +205,6 @@ def create():
 @auth.route('/<int:id>/edit', methods=('GET', 'POST'))
 def edit(id):
     post = get_post(id)
-
     if request.method == 'POST':
         title = request.form['title']
         content = request.form['content']
@@ -211,8 +213,7 @@ def edit(id):
             flash('Title is required!')
         else:
             cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-            cur.execute('UPDATE posts SET title = ?, content = ?'
-                         ' WHERE id = ?',
+            cur.execute('UPDATE posts SET title = %s, content = %s WHERE id = %s',
                          (title, content, id))
             cur.commit()
             cur.close()
@@ -225,7 +226,7 @@ def edit(id):
 def delete(id):
     post = get_post(id)
     cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cur.execute('DELETE FROM posts WHERE id = ?', (id,))
+    cur.execute('DELETE FROM posts WHERE id = %s', (id,))
     cur.commit()
     cur.close()
     flash('"{}" was successfully deleted!'.format(post['title']))

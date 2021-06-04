@@ -3,11 +3,11 @@
 {% block content %}
 <html>
   <head>
-    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='image.css') }}">
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='style.css') }}">
   </head>
   <body>
   <nav>
-    <h1>Image uploadée.</h1>
+    <h2>Image uploadée.</h2>
 
   <img src= "{{url_for('static', filename=nomimageOr)}} " alt="Image de base" width="75%">
     <br>

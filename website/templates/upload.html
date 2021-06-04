@@ -4,12 +4,19 @@
 <h1>{% block title %} Upload file {% endblock %}</h1>
 
 <html>
-   <body>
-      <form action = "http://localhost:5000/upload" method = "POST"
-         enctype = "multipart/form-data">
-         <input type = "file" name = "file" />
-         <input type = "submit"/>
-      </form>
-   </body>
+<body>
+<div class="body">
+    <div class="container">
+        <form action="http://localhost:5000/upload" method="POST" enctype="multipart/form-data">
+            <div class="upload">
+                <input type="file" name="file" class="upload-box">
+            </div>
+            <div class="button">
+                <input type="submit" Value="Upload">
+            </div>
+        </form>
+    </div>
+</div>
+</body>
 </html>
 {% endblock %}
