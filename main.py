@@ -3,9 +3,9 @@ from flask_mysqldb import MySQL
 
 app = create_app()
 app.config['MYSQL_HOST'] = "localhost"
-app.config['MYSQL_USER'] = "root"
-app.config['MYSQL_PASSWORD'] = ""
-app.config['MYSQL_DB'] = "artefakt-ai"
+app.config['MYSQL_USER'] = "util_artefakt"
+app.config['MYSQL_PASSWORD'] = "artefakt"
+app.config['MYSQL_DB'] = "artefakt_ai"
 
 mysql = MySQL(app)
 

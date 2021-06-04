@@ -22,7 +22,7 @@ mysql = MySQL(app)
 
 def get_post(post_id):
     cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cur.execute("SELECT title content FROM posts WHERE id = %s", (post_id,))
+    cur.execute("SELECT * FROM posts WHERE id = %s", (post_id,))
     new_post = cur.fetchone()
     print(new_post)
     cur.close()
@@ -125,10 +125,11 @@ def sign_up():
 def index():
     customer_id = get_customer_id(session['email'])
     cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cur.execute('SELECT id, title, content FROM posts WHERE Customer_id = %s', (customer_id,))
+    cur.execute('SELECT * FROM posts WHERE Customer_id = %s', (customer_id,))
     posts = cur.fetchall()
     cur.close()
-    return render_template('FlaskBlog.html', posts=posts)
+    print(posts)
+    return render_template('FlaskBlog.html', posts=posts, post=post)
 
 
 @auth.route('/<int:post_id>')

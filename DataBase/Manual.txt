@@ -1,0 +1,13 @@
+First thing, you need to install WAMP (for Windows), LAMP (for Linux) or XAMP.
+
+-------------------------------------
+
+Second thing, you need to go in your browser, type 'http://localhost/phpmyadmin/' and connect with User : 'root' and Password : ''.
+
+-------------------------------------
+
+Third thing, go to Import, in the nav bar at the top. Click at 'Choose a file' and choose the file 'artefakt-ai' in ths folder.
+
+-------------------------------------
+
+Fourth thing, you can disconnect by clicking on the small open door at the top left. And connect with an other user with User : 'util_artefakt' and Password : 'artefakt'.
