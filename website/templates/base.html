@@ -36,6 +36,13 @@
         <img class="logo" src="{{ url_for('static', filename= 'img/logo.png') }}">
     </div>
 </div>
+<div class="body">
+    {% if success %}
+    <div class="success">
+        <p>{{ success }}</p>
+    </div>
+</div>
+{% endif %}
 {% block content %}
 {% endblock %}
 </body>

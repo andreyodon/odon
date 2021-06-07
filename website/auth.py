@@ -19,7 +19,6 @@ app = create_app()
 
 mysql = MySQL(app)
 
-
 def get_post(post_id):
     cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cur.execute("SELECT * FROM posts WHERE id = %s", (post_id,))
@@ -40,6 +39,17 @@ def get_customer_id(email):
     if customer_id is None:
         abort(404)
     return customer_id
+
+def get_x_ray_id(customer_id):
+    oui = '%' + nomImOr + '%'
+    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cur.execute("SELECT * FROM x_ray WHERE customer_id = %s AND link LIKE %s", (customer_id, oui,))
+    img = cur.fetchone()
+    x_ray_id = img['id']
+    cur.close()
+    if x_ray_id is None:
+        abort(404)
+    return x_ray_id
 
 
 def process_img(img):
@@ -93,6 +103,9 @@ def sign_up():
     query = "SELECT * FROM pm_system"
     cursor.execute(query)
     pm_system = cursor.fetchall()
+    query = "SELECT email FROM Customer"
+    cursor.execute(query)
+    email_verif = cursor.fetchall()
     if request.method == 'POST':
         first_name = request.form['first_name']
         last_name = request.form['last_name']
@@ -106,17 +119,52 @@ def sign_up():
 
         hashed = bcrypt.hashpw(password, bcrypt.gensalt(12))
 
-        cur = mysql.connection.cursor()
+        if len(email_verif) == 0:
+            cur = mysql.connection.cursor()
 
-        cur.execute(
-            "INSERT INTO Customer (first_name, last_name, gender_id, email, password, organization, specialization_id, organization_type_id, pm_system_id) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)",
-            (first_name, last_name, gender, email, hashed, organization, specialization, organization_type, pm_system,))
+            cur.execute(
+                "INSERT INTO Customer (first_name, last_name, gender_id, email, password, organization, specialization_id, organization_type_id, pm_system_id) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+                (first_name, last_name, gender, email, hashed, organization, specialization, organization_type,
+                 pm_system,))
 
-        mysql.connection.commit()
-        session['first_name'] = first_name
-        session['email'] = email
+            mysql.connection.commit()
+            session['first_name'] = first_name
+            session['email'] = email
+            session.clear()
 
-        return redirect(url_for("views.home"))
+            return redirect(url_for("views.home"))
+        else:
+            x = len(email_verif)
+
+            for i in range(0, x):
+                if email == email_verif[i][0]:
+                    cursor = mysql.connection.cursor()
+                    query = "SELECT * FROM gender"
+                    cursor.execute(query)
+                    gender = cursor.fetchall()
+                    query = "SELECT * FROM specialization"
+                    cursor.execute(query)
+                    specialization = cursor.fetchall()
+                    query = "SELECT * FROM organization_type"
+                    cursor.execute(query)
+                    organization_type = cursor.fetchall()
+                    query = "SELECT * FROM pm_system"
+                    cursor.execute(query)
+                    pm_system = cursor.fetchall()
+                    return render_template("sign_up.html", error="E-mail already exist !", gender=gender, specialization=specialization, organization_type=organization_type, pm_system=pm_system)
+                else:
+                    cur = mysql.connection.cursor()
+
+                    cur.execute(
+                    "INSERT INTO Customer (first_name, last_name, gender_id, email, password, organization, specialization_id, organization_type_id, pm_system_id) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+                    (first_name, last_name, gender, email, hashed, organization, specialization, organization_type, pm_system,))
+
+                    mysql.connection.commit()
+                    session['first_name'] = first_name
+                    session['email'] = email
+                    session.clear()
+
+                    return redirect(url_for("views.home"))
 
     return render_template("sign_up.html", gender=gender, specialization=specialization, organization_type=organization_type, pm_system=pm_system)
 
@@ -129,7 +177,7 @@ def index():
     posts = cur.fetchall()
     cur.close()
     print(posts)
-    return render_template('FlaskBlog.html', posts=posts, post=post)
+    return render_template('FlaskBlog.html', posts=posts)
 
 
 @auth.route('/<int:post_id>')
@@ -145,6 +193,18 @@ def upload():
 
 @auth.route('/traitement')
 def traitement():
+    customer_id = get_customer_id(session['email'])
+    target = os.path.join(APP_ROOT, 'static')
+    destination = "\\".join([target, nomImOr])
+    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cur.execute('INSERT INTO x_ray (link, customer_id) VALUES ( %s, %s)', (destination, customer_id,))
+    cur.close()
+
+    x_ray_id = get_x_ray_id(customer_id)
+    destination_modif = "\\".join([target, nomImMod])
+    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cur.execute('INSERT INTO x_ray_segmentation (link, x_ray_id) VALUES ( %s, %s)', (destination_modif, x_ray_id,))
+    cur.close()
     return render_template('traitement_image.html', nomimageOr=nomImOr, nomimagemodif=nomImMod)
 
 

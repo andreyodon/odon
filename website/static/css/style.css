@@ -254,6 +254,17 @@ p {
     padding-left: 10px;
 }
 
+.success {
+    height: 30px;
+    width: 70%;
+    display: flex;
+    margin-right: 45px;
+    justify-content: flex-start;
+    border: 2px solid greenyellow;
+    border-radius: 5px;
+    color: greenyellow;
+}
+
 h1 {
     display: flex;
     justify-content: center;
