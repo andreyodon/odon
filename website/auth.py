@@ -10,14 +10,15 @@ from werkzeug.exceptions import abort
 nomImOr = ""
 nomImMod = ""
 
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 auth = Blueprint('auth', __name__)
 
 app = create_app()
 
 mysql = MySQL(app)
+
 
 def get_post(post_id):
     cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
@@ -40,22 +41,21 @@ def get_customer_id(email):
         abort(404)
     return customer_id
 
-def get_x_ray_id(customer_id):
-    oui = '%' + nomImOr + '%'
-    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cur.execute("SELECT * FROM x_ray WHERE customer_id = %s AND link LIKE %s", (customer_id, oui,))
-    img = cur.fetchone()
-    x_ray_id = img['id']
-    cur.close()
-    if x_ray_id is None:
-        abort(404)
-    return x_ray_id
-
 
 def process_img(img):
     imgmod = img
     imgmod[imgmod < 128] = 0
-    return(imgmod)
+    return imgmod
+
+
+@auth.route('/delete')
+def delete_img():
+    target = os.path.join(APP_ROOT, 'static')
+    destination = "\\".join([target, nomImOr])
+    destination_modif = "\\".join([target, nomImMod])
+    os.remove(destination)
+    os.remove(destination_modif)
+    return render_template('upload.html', nomimageOr=nomImOr, nomimagemodif=nomImMod)
 
 
 @auth.route('/sign_in', methods=['GET', 'POST'])
@@ -103,9 +103,6 @@ def sign_up():
     query = "SELECT * FROM pm_system"
     cursor.execute(query)
     pm_system = cursor.fetchall()
-    query = "SELECT email FROM Customer"
-    cursor.execute(query)
-    email_verif = cursor.fetchall()
     if request.method == 'POST':
         first_name = request.form['first_name']
         last_name = request.form['last_name']
@@ -119,52 +116,37 @@ def sign_up():
 
         hashed = bcrypt.hashpw(password, bcrypt.gensalt(12))
 
-        if len(email_verif) == 0:
-            cur = mysql.connection.cursor()
+        params = [email]
 
+        cur = mysql.connection.cursor()
+
+        count = cur.execute("SELECT * FROM customer WHERE email=%s", (params))
+
+        if count == 0:
             cur.execute(
                 "INSERT INTO Customer (first_name, last_name, gender_id, email, password, organization, specialization_id, organization_type_id, pm_system_id) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)",
-                (first_name, last_name, gender, email, hashed, organization, specialization, organization_type,
-                 pm_system,))
+                (first_name, last_name, gender, email, hashed, organization, specialization, organization_type,pm_system,))
 
             mysql.connection.commit()
             session['first_name'] = first_name
             session['email'] = email
-            session.clear()
 
             return redirect(url_for("views.home"))
+
         else:
-            x = len(email_verif)
-
-            for i in range(0, x):
-                if email == email_verif[i][0]:
-                    cursor = mysql.connection.cursor()
-                    query = "SELECT * FROM gender"
-                    cursor.execute(query)
-                    gender = cursor.fetchall()
-                    query = "SELECT * FROM specialization"
-                    cursor.execute(query)
-                    specialization = cursor.fetchall()
-                    query = "SELECT * FROM organization_type"
-                    cursor.execute(query)
-                    organization_type = cursor.fetchall()
-                    query = "SELECT * FROM pm_system"
-                    cursor.execute(query)
-                    pm_system = cursor.fetchall()
-                    return render_template("sign_up.html", error="E-mail already exist !", gender=gender, specialization=specialization, organization_type=organization_type, pm_system=pm_system)
-                else:
-                    cur = mysql.connection.cursor()
-
-                    cur.execute(
-                    "INSERT INTO Customer (first_name, last_name, gender_id, email, password, organization, specialization_id, organization_type_id, pm_system_id) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)",
-                    (first_name, last_name, gender, email, hashed, organization, specialization, organization_type, pm_system,))
-
-                    mysql.connection.commit()
-                    session['first_name'] = first_name
-                    session['email'] = email
-                    session.clear()
-
-                    return redirect(url_for("views.home"))
+            query = "SELECT * FROM gender"
+            cursor.execute(query)
+            gender = cursor.fetchall()
+            query = "SELECT * FROM specialization"
+            cursor.execute(query)
+            specialization = cursor.fetchall()
+            query = "SELECT * FROM organization_type"
+            cursor.execute(query)
+            organization_type = cursor.fetchall()
+            query = "SELECT * FROM pm_system"
+            cursor.execute(query)
+            pm_system = cursor.fetchall()
+            return render_template("sign_up.html", error="E-mail already exist !", gender=gender, specialization=specialization, organization_type=organization_type, pm_system=pm_system)
 
     return render_template("sign_up.html", gender=gender, specialization=specialization, organization_type=organization_type, pm_system=pm_system)
 
@@ -193,17 +175,15 @@ def upload():
 
 @auth.route('/traitement')
 def traitement():
-    customer_id = get_customer_id(session['email'])
     target = os.path.join(APP_ROOT, 'static')
     destination = "\\".join([target, nomImOr])
+    customer_id = get_customer_id(session['email'])
     cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cur.execute('INSERT INTO x_ray (link, customer_id) VALUES ( %s, %s)', (destination, customer_id,))
-    cur.close()
-
-    x_ray_id = get_x_ray_id(customer_id)
+    cur.execute('INSERT INTO x_ray (link, customer_id) VALUES ( %s, %s);', (destination, customer_id,))
+    x_ray_id = cur.lastrowid
     destination_modif = "\\".join([target, nomImMod])
-    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cur.execute('INSERT INTO x_ray_segmentation (link, x_ray_id) VALUES ( %s, %s)', (destination_modif, x_ray_id,))
+    mysql.connection.commit()
     cur.close()
     return render_template('traitement_image.html', nomimageOr=nomImOr, nomimagemodif=nomImMod)
 
@@ -220,30 +200,35 @@ def upload_file():
     if request.method == 'POST':
         # Récupération du nom du fichier :
         f = request.files['file']
-        destination = "\\".join([target, f.filename])
-        print("\n\t" + destination + "\n")
-        f.save(destination)
+        if f.filename == '':
+            return render_template('upload.html', error="Choose a file before upload !")
+        elif f.filename.split('.')[1] not in ALLOWED_EXTENSIONS:
+            return render_template('upload.html', error="Extension not supported !")
+        else:
+            destination = "\\".join([target, f.filename])
+            print("\n\t" + destination + "\n")
+            f.save(destination)
 
-        # Lecture de l'image :
-        imageNG = cv2.imread(destination, 0)
-        print(imageNG.shape)
+            # Lecture de l'image :
+            imageNG = cv2.imread(destination, 0)
+            print(imageNG.shape)
 
-        # Traitement de l'image :
-        mod = process_img(imageNG)
+            # Traitement de l'image :
+            mod = process_img(imageNG)
 
-        # Sauvegarde :
-        var = os.path.splitext(f.filename)
-        nomimagemodif = var[0] + "_modif" + var[1]
-        print("mod : " + nomimagemodif)
-        cv2.imwrite("website/static/" + nomimagemodif, mod)
+            # Sauvegarde :
+            var = os.path.splitext(f.filename)
+            nomimagemodif = var[0] + "_modif" + var[1]
+            print("mod : " + nomimagemodif)
+            cv2.imwrite("website/static/" + nomimagemodif, mod)
 
-        global nomImOr
-        global nomImMod
-        nomImOr = f.filename
-        nomImMod = nomimagemodif
+            global nomImOr
+            global nomImMod
+            nomImOr = f.filename
+            nomImMod = nomimagemodif
 
-        # return 'file uploaded successfully'
-        return render_template('affichage_image.html', nomimageOr=nomImOr, nomimagemodif=nomImMod)
+            # return 'file uploaded successfully'
+            return render_template('affichage_image.html', nomimageOr=nomImOr, nomimagemodif=nomImMod)
 
 
 @auth.route('/create', methods=('GET', 'POST'))
