@@ -6,18 +6,19 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style.css') }}">
 </head>
 <body>
-<nav>
-    <h2>Image uploadée.</h2>
-
-    <img src="{{url_for('static', filename=nomimageOr)}} " alt="Image de base" width="75%">
-    <br>
-    <br>
-</nav>
+<div class="images">
+    <div class="image-upload">
+        <h2>Image uploadée.</h2>
+        <img src="{{url_for('static', filename=nomimageOr)}} " alt="Image de base">
+    </div>
+</div>
+</body>
 <footer>
     <p>Êtes vous sûr de vouloir mettre cette image ?</p>
-    <button type="button" onclick="window.location.href='{{ url_for('auth.delete_img') }}';">Non</button>
-    <button type="button" onclick="location.href='traitement';">Oui</button>
+    <div class="footer-button">
+        <button type="button" class="margin-right" onclick="window.location.href='{{ url_for('auth.delete_img') }}';">Non</button>
+        <button type="button" onclick="location.href='traitement';">Oui</button>
+    </div>
 </footer>
-</body>
 </html>
 {% endblock %}

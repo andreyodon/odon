@@ -2,27 +2,28 @@
 
 {% block content %}
 <html>
-  <head>
-    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='style.css') }}">
-  </head>
-  <body>
-  <nav>
-    <h2>Image uploadée.</h2>
-
-  <img src= "{{url_for('static', filename=nomimageOr)}} " alt="Image de base" width="75%">
-    <br>
-    <br>
-  </nav>
-  <aside>
-    <h2>Image modifiée.</h2>
-
-    <img src= "{{url_for('static', filename=nomimagemodif)}} " alt="Image modifiée" width="75%">
-  </aside>
-  <footer>
+<head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style.css') }}">
+</head>
+<body>
+<div class="images">
+    <div class="image-upload">
+        <h2>Image uploadée.</h2>
+        <img src="{{url_for('static', filename=nomimageOr)}}" alt="Image de base">
+    </div>
+    <div class="image-modif">
+        <h2>Image modifiée.</h2>
+        <img src="{{url_for('static', filename=nomimagemodif)}}" alt="Image modifiée">
+    </div>
+</div>
+</body>
+<footer>
     <p>Voulez vous essayer avec une nouvelle image ?</p>
-    <button onclick="location.href='/';">Non</button>
-    <button onclick="location.href='upload';">Oui</button>
-  </footer>
-  </body>
+    <div class="footer-button">
+        <button type="button" class="margin-right" onclick="location.href='/';">Non</button>
+        <button type="button" onclick="location.href='upload';">Oui</button>
+    </div>
+</footer>
+
 </html>
 {% endblock %}
